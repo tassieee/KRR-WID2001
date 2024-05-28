@@ -1,0 +1,215 @@
+#Important to run SPARQL in protege: 
+#Make sure have sparql plugin. Files > check for plugin (download snap sparql query) 
+#Start reasoner with no errors 
+#Window > tab > sparql query 
+#Window > views > query views > snap sparql query > click on blank sparql query page 
+
+
+
+PREFIX rm: <http://www.semanticweb.org/user/ontologies/2024/3/RestaurantsManagement#>  
+
+ #All customer types and contact info: 
+
+SELECT ?customer ?customer_type ?contact_info 
+WHERE { 
+?customer rdf:type rm:Customer 
+?customer rm:CustType ?customer_type 
+?customer rm:CustContact ?contact_info 
+}
+
+
+
+
+#All staffs restaurants that employed them, and their job title :
+
+SELECT ?staff ?restaurant ?jobTitle 
+WHERE { 
+?staff rdf:type ?jobTitle 
+?jobTitle rdfs:subClassOf rm:Staff 
+?staff rm:isEmployedBy ?restaurant 
+} 
+ORDER BY ?restaurant 
+
+
+
+
+#List Customers and Their Ordered Menu Items :
+
+SELECT ?customer ?customerName ?menuItem ?menuItemType  
+WHERE {  
+?customer rdf:type rm:Customer .  
+?customer rm:orders ?menuItem .  
+?menuItem rdf:type ?menuItemType .  
+?menuItemType rdfs:subClassOf rm:Menu_Item .  
+FILTER(?menuItemType != rm:Menu_Item)  
+} 
+
+
+
+
+#Customer visits a restaurant :
+
+SELECT ?customer ?restaurant 
+WHERE { 
+?customer rdf:type rm:Customer. 
+?customer rm:visits ?restaurant. 
+?restaurant rdf:type rm:Restaurant. 
+} 
+
+
+
+#List all menu items from a specific restaurant with its price :
+
+SELECT ?menu ?menuItemType ?price 
+WHERE {  
+rm:KFC rdf:type rm:Restaurant .  
+rm:KFC rm:hasMenu ?menu .  
+?menu rdf:type ?menuItemType .  
+?menuItemType rdfs:subClassOf rm:Menu_Item .  
+?menu rm:MenuItemPrice ?price  . 
+FILTER(?menuItemType != rm:Menu_Item)  
+} ORDER BY ?price 
+
+
+
+#List out the menus of a restaurant prepared by their staff 
+
+SELECT ?restaurant ?menuItem ?menuItemType ?staff  
+WHERE {  
+?restaurant rdf:type rm:Restaurant .  
+?restaurant rm:hasMenu ?menuItem .  
+?menuItem rdf:type ?menuItemType .  
+?menuItemType rdfs:subClassOf rm:Menu_Item .  
+?staff rm:prepares ?menuItem .  
+?staff rm:isEmployedBy ?restaurant .  
+FILTER(?menuItemType != rm:Menu_Item)  
+} 
+
+
+
+
+# List out all restaurants and its location, customer type and ambiance 
+
+SELECT ?restaurant ?location ?custType ?ambiance 
+WHERE {  
+?restaurant rdf:type rm:Restaurant .  
+?restaurant rm:RestLocation ?location .  
+?restaurant rm:RestCustType ?custType . 
+?restaurant rm:RestAmbiance ?ambiance . 
+} 
+
+
+
+#Retrieving staff information in a restaurant 
+
+SELECT ?staff ?staffID ?joinedOn ?staffContact  
+WHERE {  
+?staff rdf:type rm:Staff .  
+?staff rm:isEmployedBy rm:KFC .  
+OPTIONAL { ?staff rm:StaffID ?staffID . }  
+OPTIONAL { ?staff rm:StaffJoinedOn ?joinedOn . }  
+OPTIONAL { ?staff rm:StaffContact ?staffContact . }  
+} ORDER BY ?staff  
+
+
+
+#Customer pays food to cashier  
+
+SELECT ?customer ?menu ?price ?cashier 
+
+WHERE { 
+rm:KFC rdf:type rm:Restaurant . 
+?menu rdf:type rm:Menu_Item . 
+?customer rm:paysFor ?menu .
+?menu rm:MenuItemPrice ?price . 
+?cashier rdf:type rm:Staff . 
+?cashier rm:isEmployedBy rm:KFC . 
+?customer rm:paysTo ?cashier . 
+} 
+
+
+
+#List out who ordered, prepared and served the food. 
+
+SELECT ?menu ?orderedBy ?cookedBy ?preparedBy ?servedBy 
+WHERE { 
+rm:KFC rdf:type rm:Restaurant .
+rm:KFC rm:hasMenu ?menu . 
+?menu rdf:type rm:Menu_Item .
+?menu rm:isOrderedBy ?orderedBy . 
+OPTIONAL {?menu rm:isCookedBy ?cookedBy .} 
+OPTIONAL {?menu rm:isPreparedBy ?preparedBy .}
+?menu rm:isServedBy ?servedBy . 
+} 
+
+
+
+#Listing out all restaurants and its type  
+
+SELECT ?restaurant ?restaurantType  
+WHERE {  
+?restaurant rdf:type rm:Restaurant .  
+?restaurant rdf:type ?restaurantType .  
+FILTER (?restaurantType != rm:Restaurant && ?restaurantType != owl:Thing)  
+}  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
